@@ -1,4 +1,4 @@
-#
+
 # Cookbook Name:: google_cloud
 # Recipe:: default
 #
@@ -15,4 +15,29 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
+
+remote_file "/tmp/gcutil-#{node[:google_cloud][:gcutil][:version]}.tar.gz" do
+  source "https://google-compute-engine-tools.googlecode.com/files/gcutil-#{node[:google_cloud][:gcutil][:version]}.tar.gz"
+  owner "root"
+  group "root"
+  mode "0644"
+  checksum node[:google_cloud][:gcutil][:sha]
+  action :create
+end
+
+execute "tar -xzpf /tmp/gcutil-#{node[:google_cloud][:gcutil][:version]}.tar.gz -C /usr/local/share"
+
+template "/etc/profile.d/google_cloud.sh" do
+  source "gooogle_cloud.sh.erb"
+  owner "root"
+  group "root"
+  mode "0777"
+  variables( :version => node[:google_cloud][:gcutil][:version] )
+  action :create
+end
+
+link "/usr/local/bin/gcutil" do
+  to "/usr/local/share/gcutil-#{node[:google_cloud][:gcutil][:version]}/gcutil"
+  link_type :symbolic
+  action :create
+end
