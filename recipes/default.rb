@@ -41,3 +41,15 @@ link "/usr/local/bin/gcutil" do
   link_type :symbolic
   action :create
 end
+
+template "/root/.gcutil_auth" do
+  source "google_auth.erb"
+  owner "root"
+  group "root"
+  mode "0600"
+  variables( :auth_value => node[:google_cloud][:gcutil][:auth_file_value] )
+  action :create
+end
+
+execute "/usr/local/bin/gcutil getproject --project=#{node[:google_cloud][:project]} --cache_flag_values"
+

@@ -8,9 +8,11 @@
 
 # @resource lb
 
-# Installs the Elastic Load Balancer. Not applicable.
+# Installs the Creates Google Load Balancer, can checks for GCUTIL"
 action :install do
-  log "  Install does not apply to ELB"
+  log "Verifying gcutil"
+  include_recipe "google_cloud::default"
+  
 end
 
 # Attaches an application server to Elastic Load Balancer
