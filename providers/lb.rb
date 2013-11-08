@@ -10,8 +10,18 @@
 
 # Installs the Creates Google Load Balancer, can checks for GCUTIL"
 action :install do
+  pool_name=new_resource.pool_name
   log "Verifying gcutil"
   include_recipe "google_cloud::default"
+  
+  log "Creating health check"
+  execute "/usr/local/bin/gcutil --service_version=\"v1beta16\" addhttphealthcheck \"health-check-#{pool_name}\""
+
+  log "creating lb pool" 
+  execute "/usr/local/bin/gcutil --service_version=\"v1beta16\" addtargetpool \"#{pool_name}\" --region=\"#{node[:google_cloud][:region]}\" --health_checks=\"health-check-#{pool_name}\""
+  
+  log "adding forwarding rule"
+  execute "/usr/local/bin/gcutil --service_version=\"v1beta16\" addforwardingrule --region=\"#{node[:google_cloud][:region]}\" --port_range=80 --target=\"#{pool_name}\""
   
 end
 
