@@ -27,6 +27,7 @@ attribute "google_cloud/project",
 attribute "google_cloud/region", 
   :display_name => "Google Cloud Region",
   :description => "Google Cloud Region",
+  :choice => [ "us-central1", "us-central2", "europe-west1" ],
   :required => "required",
   :recipes => [ "google_cloud::lb_setup" ]
 

@@ -25,7 +25,7 @@ action :install do
   parsed_ip=JSON.parse(`/usr/local/bin/gcutil reserveaddress "#{pool_name}" --region=us-central1 --print_json`)["items"][1]["address"]
   
   log "adding forwarding rule"
-  execute "/usr/local/bin/gcutil --service_version=\"v1beta16\" addforwardingrule --region=\"#{node[:google_cloud][:region]}\" --ip=\"#{parsed_ip}\" --target=\"#{pool_name}\""
+  execute "/usr/local/bin/gcutil --service_version=\"v1beta16\" addforwardingrule \"forwarding-rule-#{pool_name}\" --region=\"#{node[:google_cloud][:region]}\" --ip=\"#{parsed_ip}\" --target=\"#{pool_name}\""
   
 end
 
