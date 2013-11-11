@@ -28,7 +28,7 @@ end
 execute "tar -xzpf /tmp/gcutil-#{node[:google_cloud][:gcutil][:version]}.tar.gz -C /usr/local/share"
 
 template "/etc/profile.d/google_cloud.sh" do
-  source "gooogle_cloud.sh.erb"
+  source "google_cloud.sh.erb"
   owner "root"
   group "root"
   mode "0777"
