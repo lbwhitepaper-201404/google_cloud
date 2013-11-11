@@ -10,6 +10,8 @@
 
 # Installs the Creates Google Load Balancer, can checks for GCUTIL"
 action :install do
+  require 'json'
+
   pool_name=new_resource.pool_name
   log "Verifying gcutil"
   include_recipe "google_cloud::default"
@@ -30,9 +32,6 @@ end
 
 # Attaches an application server to Elastic Load Balancer
 action :attach do
-
-  require "right_cloud_api"
-  require "cloud/aws/elb/manager"
 
   log "  Attaching #{node[:ec2][:instance_id]} to" +
     " #{new_resource.service_lb_name}"
