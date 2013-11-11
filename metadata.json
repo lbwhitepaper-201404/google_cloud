@@ -47,7 +47,7 @@
       "calculated": false,
       "type": "string"
     },
-    "google_cloud/reqion": {
+    "google_cloud/region": {
       "display_name": "Google Cloud Region",
       "description": "Google Cloud Region",
       "required": "required",

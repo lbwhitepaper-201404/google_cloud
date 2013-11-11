@@ -24,7 +24,7 @@ attribute "google_cloud/project",
   :required => "required",
   :recipes => [ "google_cloud::default" ]
 
-attribute "google_cloud/reqion", 
+attribute "google_cloud/region", 
   :display_name => "Google Cloud Region",
   :description => "Google Cloud Region",
   :required => "required",
