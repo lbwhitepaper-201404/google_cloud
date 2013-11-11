@@ -14,8 +14,7 @@ action :install do
 
   pool_name=new_resource.pool_name
   log "Verifying gcutil"
-  include_recipe "google_cloud::default"
-  
+
   log "Creating health check"
   execute "/usr/local/bin/gcutil --service_version=\"v1beta16\" addhttphealthcheck \"health-check-#{pool_name}\""
 
