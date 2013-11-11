@@ -43,7 +43,7 @@ link "/usr/local/bin/gcutil" do
 end
 
 template "/root/.gcutil_auth" do
-  source "google_auth.erb"
+  source "gcutil_auth.erb"
   owner "root"
   group "root"
   mode "0600"
