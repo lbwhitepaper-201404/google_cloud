@@ -22,7 +22,7 @@ action :install do
   execute "/usr/local/bin/gcutil --service_version=\"v1beta16\" addtargetpool \"#{pool_name}\" --region=\"#{node[:google_cloud][:region]}\" --health_checks=\"health-check-#{pool_name}\""
   
   log "creating ip address"
-  parsed_ip=JSON.parse(`./gcutil reserveaddress "pool-ip1" --region=us-central1 --print_json`)["items"][1]["address"]
+  parsed_ip=JSON.parse(`/usr/local/bin/gcutil reserveaddress "pool-ip1" --region=us-central1 --print_json`)["items"][1]["address"]
   
   log "adding forwarding rule"
   execute "/usr/local/bin/gcutil --service_version=\"v1beta16\" addforwardingrule --region=\"#{node[:google_cloud][:region]}\" --ip=\"#{parsed_ip}\" --target=\"#{pool_name}\""
