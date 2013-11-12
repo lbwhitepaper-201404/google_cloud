@@ -36,49 +36,8 @@ end
 # Attaches an application server to Elastic Load Balancer
 action :attach do
 
-  log "  Attaching #{node[:ec2][:instance_id]} to" +
+  log "  Attaching #{node[:google_cloud][:instance_id]} to" +
     " #{new_resource.service_lb_name}"
-
-  # Creates an interface handle to ELB.
-  elb = get_elb_object(
-    new_resource.service_account_id,
-    new_resource.service_account_secret
-  )
-
-  # Verify that the ELB exists.
-  existing_elbs = elb.DescribeLoadBalancers["DescribeLoadBalancersResponse"]\
-    ["DescribeLoadBalancersResult"]\
-    ["LoadBalancerDescriptions"]\
-    ["member"]
-
-  # If there is only one ELB in the account, Right Cloud API returns a single
-  # Hash in the response and an array is returned if multiple ELBs exist.
-  existing_elbs = [existing_elbs] if existing_elbs.is_a?(Hash)
-
-  if selected_elb = existing_elbs.detect { |existing_elb|
-    existing_elb["LoadBalancerName"] == new_resource.service_lb_name }
-    log "  ELB '#{new_resource.service_lb_name}' exists"
-  else
-    raise "ERROR: ELB '#{new_resource.service_lb_name}' does not exist"
-  end
-
-  if selected_elb["VPCId"].to_s.empty?
-    # Checks if this instance's zone is part of the lb. If not, add it.
-    if selected_elb["AvailabilityZones"]["member"].
-      include?(node[:ec2][:placement][:availability_zone])
-      log "  ...instance already part of ELB zone"
-    else
-      log "  ...activating zone #{node[:ec2][:placement][:availability_zone]}"
-      elb.EnableAvailabilityZonesForLoadBalancer({
-        "LoadBalancerName" => new_resource.service_lb_name,
-        "AvailabilityZones.member" => node[:ec2][:placement][:availability_zone]
-      })
-    end
-  else
-    # Enabling the 'AvailabilityZones' is skipped if the ELB is attached to
-    # a VPC.
-    log "  ELB is attached to a VPC"
-  end
 
   # Opens the backend_port.
   # See cookbooks/sys_firewall/providers/default.rb for the "update" action.
@@ -88,24 +47,19 @@ action :attach do
     ip_addr "any"
     action :update
   end
-
-  # Connects the server to ELB.
-  log "  ...registering with ELB"
-  elb.RegisterInstancesWithLoadBalancer({
-    "LoadBalancerName" => new_resource.service_lb_name,
-    "Instances.member" => {"InstanceId" => node[:ec2][:instance_id]}
-  })
+  
+  #add a cookbook now
 
 end
 
 # Sends an attach request from an application server to an Elastic Load Balancer
 action :attach_request do
 
-  log "  Attach request for #{node[:ec2][:instance_id]}"
+  log "  Attach request for #{node[:google_cloud][:instance_id]}"
 
   # Calls the "attach" action
-  lb "Attaching to ELB" do
-    provider "lb_elb"
+  lb "Attaching to GCE-LB" do
+    provider "google_cloud_lb"
     backend_port new_resource.backend_port
     service_lb_name new_resource.service_lb_name
     service_account_id new_resource.service_account_id
@@ -118,26 +72,12 @@ end
 # Detaches an application server from the Elastic Load Balancer
 action :detach do
 
-  require "right_cloud_api"
-  require "cloud/aws/elb/manager"
 
-  log "  Detaching #{node[:ec2][:instance_id]} from" +
+  log "  Detaching #{node[:google_cloud][:instance_id]} from" +
     " #{new_resource.service_lb_name}"
 
-  # Creates an interface handle to ELB.
-  elb = get_elb_object(
-    new_resource.service_account_id,
-    new_resource.service_account_secret
-  )
+  #add code here
 
-  # Deregister the server to ELB.
-  log "  ...DE-registering with ELB"
-  elb.DeregisterInstancesFromLoadBalancer({
-    "LoadBalancerName" => new_resource.service_lb_name,
-    "Instances.member" => {"InstanceId" => node[:ec2][:instance_id]}
-  })
-
-  # Closes the backend_port.
   # See cookbooks/sys_firewall/providers/default.rb for the "update" action.
   sys_firewall "Close backend_port allowing ELB to connect" do
     port new_resource.backend_port
@@ -151,11 +91,11 @@ end
 # Sends a detach request from an application server to an Elastic Load Balancer
 action :detach_request do
 
-  log "  Detach request for #{node[:ec2][:instance_id]}"
+  log "  Detach request for #{node[:google_cloud][:instance_id]}"
 
   # Calls the "detach" action
-  lb "Detaching from ELB" do
-    provider "lb_elb"
+  lb "Detaching from GCE-LB" do
+    provider "google_cloud_lb"
     backend_port new_resource.backend_port
     service_lb_name new_resource.service_lb_name
     service_account_id new_resource.service_account_id
@@ -167,10 +107,10 @@ end
 
 # Installs and configures collectd plugins for the server. Not applicable.
 action :setup_monitoring do
-  log "  Setup monitoring does not apply to ELB"
+  log "  Setup monitoring does not apply to GCE-LB"
 end
 
 # Restarts the Elastic Load Balancer service. Not applicable.
 action :restart do
-  log "  Restart does not apply to ELB"
+  log "  Restart does not apply to GCE-LB"
 end
