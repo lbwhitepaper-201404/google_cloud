@@ -35,9 +35,11 @@ end
 
 # Attaches an application server to Elastic Load Balancer
 action :attach do
+  
+  service_lb_name=new_resource.service_lb_name
 
   log "  Attaching #{node[:google_cloud][:instance_id]} to" +
-    " #{new_resource.service_lb_name}"
+    " #{service_lb_name}"
 
   # Opens the backend_port.
   # See cookbooks/sys_firewall/providers/default.rb for the "update" action.
@@ -48,8 +50,9 @@ action :attach do
     action :update
   end
   
-  #add a cookbook now
-
+  #add a instance to resource pool
+  execute "/usr/local/bin/gcutil --project=#{node[:google_cloud][:project]} addtargetpoolinstance #{service_lb_name} --instances=#{node[:google_cloud][:zone_id]}/#{node[:google_cloud][:instance_id]} --region=#{node[:google_cloud][:region]}"
+  
 end
 
 # Sends an attach request from an application server to an Elastic Load Balancer
@@ -77,6 +80,7 @@ action :detach do
     " #{new_resource.service_lb_name}"
 
   #add code here
+   execute "/usr/local/bin/gcutil --project=#{node[:google_cloud][:project]} removetargetpoolinstance #{service_lb_name} --instances=#{node[:google_cloud][:zone_id]}/#{node[:google_cloud][:instance_id]} --region=#{node[:google_cloud][:region]}"
 
   # See cookbooks/sys_firewall/providers/default.rb for the "update" action.
   sys_firewall "Close backend_port allowing ELB to connect" do

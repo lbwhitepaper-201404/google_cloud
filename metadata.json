@@ -8,7 +8,8 @@
   "platforms": {
   },
   "dependencies": {
-    "python": ">= 0.0.0"
+    "python": ">= 0.0.0",
+    "sys_firewall": ">= 0.0.0"
   },
   "recommendations": {
   },
@@ -62,6 +63,19 @@
       "calculated": false,
       "type": "string"
     },
+    "google_cloud/instance_id": {
+      "display_name": "Google Cloud Instance ID",
+      "description": "Google Cloud Instance ID",
+      "required": "optional",
+      "recipes": [
+        "google_cloud::default"
+      ],
+      "choice": [
+
+      ],
+      "calculated": false,
+      "type": "string"
+    },
     "google_cloud/lb/pool_name": {
       "display_name": "Google LB Pool Name",
       "description": "Google LB Pool Name",
@@ -108,7 +122,9 @@
   },
   "recipes": {
     "google_cloud::default": "installs gcutil",
-    "google_cloud::lb_setup": "sets up google cloud lb"
+    "google_cloud::lb_setup": "sets up google cloud lb",
+    "google_cloud::lb_attach": "attaches to lb",
+    "google_cloud::lb_detach": "detaches from lb"
   },
   "version": "0.1.0"
 }

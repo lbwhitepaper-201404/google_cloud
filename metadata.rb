@@ -7,9 +7,12 @@ long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version          '0.1.0'
 
 depends "python"
+depends "sys_firewall"
 
 recipe "google_cloud::default", "installs gcutil"
 recipe "google_cloud::lb_setup", "sets up google cloud lb"
+recipe "google_cloud::lb_attach", "attaches to lb"
+recipe "google_cloud::lb_detach", "detaches from lb"
 
 #general settings
 attribute "google_cloud/gcutil/auth_file_value", 
