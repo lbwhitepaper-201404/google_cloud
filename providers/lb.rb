@@ -16,19 +16,19 @@ action :install do
   port=new_resource.port
   tag=new_resource.tag
 
-  log "creating firewall rule"
+  Chef::Log.info "creating firewall rule"
   execute "/usr/local/bin/gcutil addfirewall #{pool_name}-firewall --target_tags=#{tag} --allowed=tcp:#{port}"
 
-  log "Creating health check"
+  Chef::Log.info "Creating health check"
   execute "/usr/local/bin/gcutil --service_version=\"v1beta16\" addhttphealthcheck \"health-check-#{pool_name}\""
 
-  log "creating lb pool" 
+  Chef::Log.info "creating lb pool" 
   execute "/usr/local/bin/gcutil --service_version=\"v1beta16\" addtargetpool \"#{pool_name}\" --region=\"#{node[:google_cloud][:region]}\" --health_checks=\"health-check-#{pool_name}\""
   
-  log "creating ip address"
+  Chef::Log.info "creating ip address"
   parsed_ip=JSON.parse(`/usr/local/bin/gcutil reserveaddress "#{pool_name}" --region=us-central1 --print_json`)["items"][1]["address"]
   
-  log "adding forwarding rule"
+  Chef::Log.info "adding forwarding rule"
   execute "/usr/local/bin/gcutil --service_version=\"v1beta16\" addforwardingrule \"forwarding-rule-#{pool_name}\" --region=\"#{node[:google_cloud][:region]}\" --ip=\"#{parsed_ip}\" --target=\"#{pool_name}\""
   
 end
@@ -43,7 +43,7 @@ action :attach do
     lb_fw_tag=new_resource.tag
   end
 
-  log "  Attaching #{node[:google_cloud][:instance_id]} to" +
+  Chef::Log.info "  Attaching #{node[:google_cloud][:instance_id]} to" +
     " #{service_lb_name}"
 
   # Opens the backend_port.
@@ -69,7 +69,7 @@ end
 # Sends an attach request from an application server to an Elastic Load Balancer
 action :attach_request do
 
-  log "  Attach request for #{node[:google_cloud][:instance_id]}"
+  Chef::Log.info "  Attach request for #{node[:google_cloud][:instance_id]}"
 
   # Calls the "attach" action
   lb "Attaching to GCE-LB" do
@@ -92,7 +92,7 @@ action :detach do
     lb_fw_tag=new_resource.tag
   end
 
-  log "  Detaching #{node[:google_cloud][:instance_id]} from" +
+  Chef::Log.info "  Detaching #{node[:google_cloud][:instance_id]} from" +
     " #{new_resource.service_lb_name}"
 
   #add code here
@@ -118,7 +118,7 @@ end
 # Sends a detach request from an application server to an Elastic Load Balancer
 action :detach_request do
 
-  log "  Detach request for #{node[:google_cloud][:instance_id]}"
+  Chef::Log.info "  Detach request for #{node[:google_cloud][:instance_id]}"
 
   # Calls the "detach" action
   lb "Detaching from GCE-LB" do
@@ -134,10 +134,10 @@ end
 
 # Installs and configures collectd plugins for the server. Not applicable.
 action :setup_monitoring do
-  log "  Setup monitoring does not apply to GCE-LB"
+  Chef::Log.info "  Setup monitoring does not apply to GCE-LB"
 end
 
 # Restarts the Elastic Load Balancer service. Not applicable.
 action :restart do
-  log "  Restart does not apply to GCE-LB"
+  Chef::Log.info "  Restart does not apply to GCE-LB"
 end
