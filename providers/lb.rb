@@ -37,6 +37,11 @@ end
 action :attach do
   
   service_lb_name=new_resource.service_lb_name
+  if new_resource.tag.nil?
+    lb_fw_tag=node[:google][:lb][:tag]
+  else
+    lb_fw_tag=new_resource.tag
+  end
 
   log "  Attaching #{node[:google_cloud][:instance_id]} to" +
     " #{service_lb_name}"
@@ -49,7 +54,13 @@ action :attach do
     ip_addr "any"
     action :update
   end
-  
+  #opening google firewall port
+  instance=JSON.parse(`/usr/local/bin/gcutil --project="#{node[:google_cloud][:project]}" getinstance #{node[:google_cloud][:instance_id} --print_json`)
+  fingerprint=instance["tags"]["fingerprint"]
+  tags=instance["tags"]["items"]
+  tags<<lb_fw_tag
+  execute "/usr/local/bin/gcutil --project=\"#{node[:google_cloud][:project]}\" setinstancetags #{node[:google_cloud][:instance_id} --tags #{tags.join(",")} --fingerprint #{fingerprint}"
+
   #add a instance to resource pool
   execute "/usr/local/bin/gcutil --project=#{node[:google_cloud][:project]} addtargetpoolinstance #{service_lb_name} --instances=#{node[:google_cloud][:zone_id]}/#{node[:google_cloud][:instance_id]} --region=#{node[:google_cloud][:region]}"
   
@@ -75,6 +86,11 @@ end
 # Detaches an application server from the Elastic Load Balancer
 action :detach do
 
+  if new_resource.tag.nil?
+    lb_fw_tag=node[:google][:lb][:tag]
+  else
+    lb_fw_tag=new_resource.tag
+  end
 
   log "  Detaching #{node[:google_cloud][:instance_id]} from" +
     " #{new_resource.service_lb_name}"
@@ -90,6 +106,13 @@ action :detach do
     action :update
   end
 
+  #closing google firewall port
+  instance=JSON.parse(`/usr/local/bin/gcutil --project="#{node[:google_cloud][:project]}" getinstance #{node[:google_cloud][:instance_id} --print_json`)
+  fingerprint=instance["tags"]["fingerprint"]
+  tags=instance["tags"]["items"]
+  tags.delete(lb_fw_tag)
+  execute "/usr/local/bin/gcutil --project=\"#{node[:google_cloud][:project]}\" setinstancetags #{node[:google_cloud][:instance_id} --tags #{tags.join(",")} --fingerprint #{fingerprint}"
+  #
 end
 
 # Sends a detach request from an application server to an Elastic Load Balancer
