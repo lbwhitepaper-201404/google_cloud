@@ -123,8 +123,8 @@
   "recipes": {
     "google_cloud::default": "installs gcutil",
     "google_cloud::lb_setup": "sets up google cloud lb",
-    "google_cloud::lb_attach": "attaches to lb",
-    "google_cloud::lb_detach": "detaches from lb"
+    "google_cloud::lb_do_attach": "attaches to lb",
+    "google_cloud::lb_do_detach": "detaches from lb"
   },
   "version": "0.1.0"
 }

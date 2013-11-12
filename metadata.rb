@@ -11,8 +11,8 @@ depends "sys_firewall"
 
 recipe "google_cloud::default", "installs gcutil"
 recipe "google_cloud::lb_setup", "sets up google cloud lb"
-recipe "google_cloud::lb_attach", "attaches to lb"
-recipe "google_cloud::lb_detach", "detaches from lb"
+recipe "google_cloud::lb_do_attach", "attaches to lb"
+recipe "google_cloud::lb_do_detach", "detaches from lb"
 
 #general settings
 attribute "google_cloud/gcutil/auth_file_value", 
