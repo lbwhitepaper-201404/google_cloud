@@ -85,6 +85,8 @@ end
 
 # Detaches an application server from the Elastic Load Balancer
 action :detach do
+  
+  service_lb_name=new_resource.service_lb_name
 
   if new_resource.tag.nil?
     lb_fw_tag=node[:google][:lb][:tag]
@@ -92,8 +94,7 @@ action :detach do
     lb_fw_tag=new_resource.tag
   end
 
-  Chef::Log.info "  Detaching #{node[:google_cloud][:instance_id]} from" +
-    " #{new_resource.service_lb_name}"
+  Chef::Log.info "  Detaching #{node[:google_cloud][:instance_id]} from #{service_lb_name}"
 
   #add code here
    execute "/usr/local/bin/gcutil --project=#{node[:google_cloud][:project]} removetargetpoolinstance #{service_lb_name} --instances=#{node[:google_cloud][:zone_id]}/#{node[:google_cloud][:instance_id]} --region=#{node[:google_cloud][:region]}"
