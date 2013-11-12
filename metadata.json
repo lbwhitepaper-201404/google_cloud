@@ -81,7 +81,9 @@
       "description": "Google LB Pool Name",
       "required": "required",
       "recipes": [
-        "google_cloud::lb_setup"
+        "google_cloud::lb_setup",
+        "google_cloud::lb_do_attach",
+        "google_cloud::lb_do_detach"
       ],
       "choice": [
 

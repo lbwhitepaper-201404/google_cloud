@@ -45,7 +45,7 @@ attribute "google_cloud/lb/pool_name",
   :display_name => "Google LB Pool Name",
   :description => "Google LB Pool Name",
   :required => "required",
-  :recipes => [ "google_cloud::lb_setup" ]
+  :recipes => [ "google_cloud::lb_setup", "google_cloud::lb_do_attach", "google_cloud::lb_do_detach" ]
 
 attribute "google_cloud/lb/port",
   :display_name => "Google LB Port Number", 
