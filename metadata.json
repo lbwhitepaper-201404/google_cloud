@@ -57,11 +57,11 @@
         "europe-west1"
       ],
       "required": "required",
-      "recipes": [
-        "google_cloud::lb_setup"
-      ],
       "calculated": false,
-      "type": "string"
+      "type": "string",
+      "recipes": [
+
+      ]
     },
     "google_cloud/instance_id": {
       "display_name": "Google Cloud Instance ID",
