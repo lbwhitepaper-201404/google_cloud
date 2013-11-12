@@ -13,7 +13,11 @@ action :install do
   require 'json'
 
   pool_name=new_resource.pool_name
-  log "Verifying gcutil"
+  port=new_resource.port
+  tag=new_resource.tag
+
+  log "creating firewall rule"
+  execute "/usr/local/bin/gcutil addfirewall #{pool_name}-firewall --target_tags=#{tag} --allowed=tcp:#{port}"
 
   log "Creating health check"
   execute "/usr/local/bin/gcutil --service_version=\"v1beta16\" addhttphealthcheck \"health-check-#{pool_name}\""

@@ -37,3 +37,17 @@ attribute "google_cloud/lb/pool_name",
   :description => "Google LB Pool Name",
   :required => "required",
   :recipes => [ "google_cloud::lb_setup" ]
+
+attribute "google_cloud/lb/port",
+  :display_name => "Google LB Port Number", 
+  :description => "Google LB Port Number",
+  :required => "optional",
+  :default => "80",
+  :recipes => [ "google_cloud::lb_setup" ]
+
+attribute "google_cloud/lb/tag",
+  :display_name => "Google LB Firewall Tag",
+  :description => "Google LB Firewall Tag",
+  :required => "optional",
+  :default => "www",
+  :recipes => [ "google_cloud::lb_setup" ]
