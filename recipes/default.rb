@@ -53,11 +53,3 @@ end
 
 execute "/usr/local/bin/gcutil getproject --project=#{node[:google_cloud][:project]} --cache_flag_values"
 
-gem "json" do
-  action :install
-end
-
-chef_gem "json" do
-  action :install
-end
-
