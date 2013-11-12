@@ -31,6 +31,12 @@ attribute "google_cloud/region",
   :required => "required",
   :recipes => [ "google_cloud::lb_setup" ]
 
+attribute "google_cloud/instance_id",
+  :display_name => "Google Cloud Instance ID",
+  :description => "Google Cloud Instance ID",
+  :required => "optional",
+  :recipes => [ "google_cloud::default" ]
+
 #lb settings
 attribute "google_cloud/lb/pool_name",
   :display_name => "Google LB Pool Name",
@@ -51,3 +57,4 @@ attribute "google_cloud/lb/tag",
   :required => "optional",
   :default => "www",
   :recipes => [ "google_cloud::lb_setup" ]
+

@@ -54,6 +54,7 @@ attribute :port, :kind_of => String, :default => "80"
 #firewall Tag
 attribute :tag, :kind_of => String, :default => "www"
 
+
 # General LoadBalance Actions
 #
 # Below are the actions defined by the lb resource interface.

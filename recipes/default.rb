@@ -56,3 +56,10 @@ execute "/usr/local/bin/gcutil getproject --project=#{node[:google_cloud][:proje
 gem "json" do
   action :install
 end
+
+chef_gem "json" do
+  action :install
+end
+
+require 'json'
+node[:google_cloud][:instance]=JSON.parse(`/usr/local/bin/gcutil getinstance #{node[:google_cloud][:instance_id]} --print_json`) unless node[:google_cloud][:instance_id].nil?
