@@ -20,16 +20,20 @@ action :install do
   execute "/usr/local/bin/gcutil addfirewall #{pool_name}-firewall --target_tags=#{tag} --allowed=tcp:#{port}"
 
   Chef::Log.info "Creating health check"
-  execute "/usr/local/bin/gcutil --service_version=\"v1beta16\" addhttphealthcheck \"health-check-#{pool_name}\""
+  execute "/usr/local/bin/gcutil addhttphealthcheck \"health-check-#{pool_name}\""
 
   Chef::Log.info "creating lb pool" 
-  execute "/usr/local/bin/gcutil --service_version=\"v1beta16\" addtargetpool \"#{pool_name}\" --region=\"#{node[:google_cloud][:region]}\" --health_checks=\"health-check-#{pool_name}\""
+  execute "/usr/local/bin/gcutil addtargetpool \"#{pool_name}\" --region=\"#{node[:google_cloud][:region]}\" --health_checks=\"health-check-#{pool_name}\""
   
-  Chef::Log.info "creating ip address"
-  parsed_ip=JSON.parse(`/usr/local/bin/gcutil reserveaddress "#{pool_name}" --region=us-central1 --print_json`)["items"][1]["address"]
+  if node[:google][:lb][:ip].nil?  
+    Chef::Log.info "creating ip address"
+    parsed_ip=JSON.parse(`/usr/local/bin/gcutil reserveaddress "#{pool_name}" --region=us-central1 --print_json`)["items"][1]["address"]
+  else
+    parsed_ip=node[:google][:lb][:ip]
+  end
   
   Chef::Log.info "adding forwarding rule"
-  execute "/usr/local/bin/gcutil --service_version=\"v1beta16\" addforwardingrule \"forwarding-rule-#{pool_name}\" --region=\"#{node[:google_cloud][:region]}\" --ip=\"#{parsed_ip}\" --target=\"#{pool_name}\""
+  execute "/usr/local/bin/gcutil addforwardingrule \"forwarding-rule-#{pool_name}\" --region=\"#{node[:google_cloud][:region]}\" --ip=\"#{parsed_ip}\" --target=\"#{pool_name}\""
   
 end
 
@@ -58,11 +62,18 @@ action :attach do
   instance=JSON.parse(`/usr/local/bin/gcutil --project="#{node[:google_cloud][:project]}" getinstance #{node[:google_cloud][:instance_id]} --print_json`)
   fingerprint=instance["tags"]["fingerprint"]
   tags=instance["tags"]["items"]
-  tags<<lb_fw_tag
+  if !tags.include?(lb_fw_tg)
+    tags<<lb_fw_tag
+  end
   execute "/usr/local/bin/gcutil --project=\"#{node[:google_cloud][:project]}\" setinstancetags #{node[:google_cloud][:instance_id]} --tags #{tags.join(",")} --fingerprint #{fingerprint}"
 
   #add a instance to resource pool
   execute "/usr/local/bin/gcutil --project=#{node[:google_cloud][:project]} addtargetpoolinstance #{service_lb_name} --instances=#{node[:google_cloud][:zone_id]}/#{node[:google_cloud][:instance_id]} --region=#{node[:google_cloud][:region]}"
+
+  #add ip to instance if it doesn't exist
+  if !node["network"]["interfaces"]["eth0"]["addresses"].keys.include?(node[:google_cloud][:lb][:ip])
+    execute "ifconfig eth0:1 add #{node[:google_cloud][:lb][:ip]}"
+  end
   
 end
 
@@ -95,6 +106,10 @@ action :detach do
   end
 
   Chef::Log.info "  Detaching #{node[:google_cloud][:instance_id]} from #{service_lb_name}"
+
+  if node["network"]["interfaces"]["eth0"]["addresses"].keys.include?(node[:google_cloud][:lb][:ip])
+    execute "ifconfig eth0:1 del #{node[:google_cloud][:lb][:ip]}"
+  end
 
   #add code here
    execute "/usr/local/bin/gcutil --project=#{node[:google_cloud][:project]} removetargetpoolinstance #{service_lb_name} --instances=#{node[:google_cloud][:zone_id]}/#{node[:google_cloud][:instance_id]} --region=#{node[:google_cloud][:region]}"

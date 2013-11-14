@@ -60,3 +60,8 @@ attribute "google_cloud/lb/tag",
   :default => "www",
   :recipes => [ "google_cloud::lb_setup" ]
 
+attribute "google_cloud/lb/ip", 
+  :display_name => "Google LB IP",
+  :description => "Google Cloud Static IP",
+  :required => "required",
+  :recipes => [  "google_cloud::lb_do_attach", "google_cloud::lb_do_detach" ]
