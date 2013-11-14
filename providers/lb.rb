@@ -62,7 +62,7 @@ action :attach do
   instance=JSON.parse(`/usr/local/bin/gcutil --project="#{node[:google_cloud][:project]}" getinstance #{node[:google_cloud][:instance_id]} --print_json`)
   fingerprint=instance["tags"]["fingerprint"]
   tags=instance["tags"]["items"]
-  if !tags.include?(lb_fw_tg)
+  if !tags.include?(lb_fw_tag)
     tags<<lb_fw_tag
   end
   execute "/usr/local/bin/gcutil --project=\"#{node[:google_cloud][:project]}\" setinstancetags #{node[:google_cloud][:instance_id]} --tags #{tags.join(",")} --fingerprint #{fingerprint}"

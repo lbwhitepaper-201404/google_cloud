@@ -1,2 +1,2 @@
-default[:google_cloud][:gcutil][:version]='1.10.0'
-default[:google_cloud][:gcutil][:sha]='a9322892b6183adf726c2390e66a048bf8f064dc'
+default[:google_cloud][:gcutil][:version]='1.11.0'
+default[:google_cloud][:gcutil][:sha]='bb68d4bd34731361e6b99f015546016b5d34bf13'
