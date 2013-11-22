@@ -10,6 +10,7 @@
 #
 # Below are the attributes defined by the LB resource interface.
 #
+require 'resolv'
 
 # Pool name for the load balancer
 attribute :pool_name, :kind_of => String, :name_attribute => true
@@ -20,7 +21,7 @@ attribute :pool_name, :kind_of => String, :name_attribute => true
 attribute :backend_id, :kind_of => String, :default => ""
 
 # IP of the backend server
-attribute :backend_ip, :kind_of => String, :default => ""
+attribute :backend_ip, :kind_of => String, :default => "", :regex => Resolv::IPv4::Regex
 
 # Port on which the backend server is listening on
 attribute :backend_port, :kind_of => Integer, :default => 8000
