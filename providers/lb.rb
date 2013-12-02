@@ -74,9 +74,14 @@ action :attach do
     
   fingerprint=instance["tags"]["fingerprint"]
   tags=instance["tags"]["items"]
-  if !tags.include?(lb_fw_tag)
-    tags<<lb_fw_tag
+  if !tags.nil?
+    if !tags.include?(lb_fw_tag)
+      tags<<lb_fw_tag
+    end
+  else
+    tags=[lb_fw_tag]
   end
+
   execute "/usr/local/bin/gcutil --project=\"#{node[:google_cloud][:project]}\" setinstancetags #{node[:google_cloud][:instance_id]} --tags #{tags.join(",")} --fingerprint #{fingerprint}"
 
   #add a instance to resource pool
