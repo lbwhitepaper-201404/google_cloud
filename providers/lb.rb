@@ -61,6 +61,8 @@ action :attach do
   end
   #opening google firewall port
   counter=0
+  cmd="/usr/local/bin/gcutil --project="#{node[:google_cloud][:project]}" getinstance #{node[:google_cloud][:instance_id]} --print_json"
+  Chef::Log.info cmd
   begin
     instance=JSON.parse(`/usr/local/bin/gcutil --project="#{node[:google_cloud][:project]}" getinstance #{node[:google_cloud][:instance_id]} --print_json`)
   rescue
