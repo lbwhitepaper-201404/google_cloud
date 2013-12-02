@@ -41,6 +41,7 @@ end
 action :attach do
   
   service_lb_name=new_resource.service_lb_name
+  raise "service_lb_name can not be blank" if service_lb_name.nil?
   if new_resource.tag.nil?
     lb_fw_tag=node[:google][:lb][:tag]
   else
@@ -59,7 +60,16 @@ action :attach do
     action :update
   end
   #opening google firewall port
-  instance=JSON.parse(`/usr/local/bin/gcutil --project="#{node[:google_cloud][:project]}" getinstance #{node[:google_cloud][:instance_id]} --print_json`)
+  counter=0
+  begin
+    instance=JSON.parse(`/usr/local/bin/gcutil --project="#{node[:google_cloud][:project]}" getinstance #{node[:google_cloud][:instance_id]} --print_json`)
+  rescue
+    Chef::Log.info "Unable to parse json properly, retrying for #{120-counter} times"
+    sleep 1
+    counter +=1
+    retry if counter < 121
+  end
+    
   fingerprint=instance["tags"]["fingerprint"]
   tags=instance["tags"]["items"]
   if !tags.include?(lb_fw_tag)
