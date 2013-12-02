@@ -27,7 +27,7 @@ end
 
 execute "tar -xzpf /tmp/gcutil-#{node[:google_cloud][:gcutil][:version]}.tar.gz -C /usr/local/share"
 
-execute "python /usr/local/share/gcutil-#{node[:google_cloud][:gcutil][:version]}/setup.py install"
+execute "cd /usr/local/share/gcutil-#{node[:google_cloud][:gcutil][:version]}; python setup.py install"
 
 
 template "/etc/profile.d/google_cloud.sh" do
