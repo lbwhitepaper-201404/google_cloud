@@ -82,7 +82,7 @@ action :attach do
     tags=[lb_fw_tag]
   end
 
-  execute "/usr/local/bin/gcutil --project=\"#{node[:google_cloud][:project]}\" setinstancetags #{node[:google_cloud][:instance_id]} --tags #{tags.join(",")} --fingerprint #{fingerprint}"
+  execute "/usr/local/bin/gcutil --project=\"#{node[:google_cloud][:project]}\" setinstancetags #{node[:google_cloud][:instance_id]} --tags \"#{tags.join(",")}\" --fingerprint #{fingerprint}"
 
   #add a instance to resource pool
   execute "/usr/local/bin/gcutil --project=#{node[:google_cloud][:project]} addtargetpoolinstance #{service_lb_name} --instances=#{node[:google_cloud][:zone_id]}/#{node[:google_cloud][:instance_id]} --region=#{node[:google_cloud][:region]}"
@@ -144,7 +144,7 @@ action :detach do
   fingerprint=instance["tags"]["fingerprint"]
   tags=instance["tags"]["items"]
   tags.delete(lb_fw_tag)
-  execute "/usr/local/bin/gcutil --project=\"#{node[:google_cloud][:project]}\" setinstancetags #{node[:google_cloud][:instance_id]} --tags #{tags.join(",")} --fingerprint #{fingerprint}"
+  execute "/usr/local/bin/gcutil --project=\"#{node[:google_cloud][:project]}\" setinstancetags #{node[:google_cloud][:instance_id]} --tags \"#{tags.join(",")}\" --fingerprint #{fingerprint}"
   #
 end
 
