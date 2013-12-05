@@ -1,2 +1,8 @@
-default[:google_cloud][:gcutil][:version]='1.11.0'
-default[:google_cloud][:gcutil][:sha]='bb68d4bd34731361e6b99f015546016b5d34bf13'
+case node[:platform]
+when "ubuntu","debian"
+  default[:google_cloud][:python][:pkg]="python"
+  default[:google_cloud][:python][:pkg]="python"
+when "redhat","centos"
+  default[:google_cloud][:python][:pkg]="python27"
+  default[:google_cloud][:python][:bin]="python2.7"
+end

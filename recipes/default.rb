@@ -16,19 +16,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-remote_file "/tmp/gcutil-#{node[:google_cloud][:gcutil][:version]}.tar.gz" do
-  source "https://google-compute-engine-tools.googlecode.com/files/gcutil-#{node[:google_cloud][:gcutil][:version]}.tar.gz"
+
+package node[:google_cloud][:python][:pkg] do
+  action :install
+end
+
+remote_file "/opt/google-cloud-sdk.tar.gz" do
+  source "https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz"
   owner "root"
   group "root"
   mode "0644"
-  checksum node[:google_cloud][:gcutil][:sha]
   action :create
 end
 
-execute "tar -xzpf /tmp/gcutil-#{node[:google_cloud][:gcutil][:version]}.tar.gz -C /usr/local/share"
+execute "tar -xvzf /opt/google-cloud-sdk.tar.gz"
 
-execute "cd /usr/local/share/gcutil-#{node[:google_cloud][:gcutil][:version]}; python setup.py install"
-
+execute "CLOUDSDK_CORE_DISABLE_PROMPTS=1 #{node[:google_cloud][:python][:bin]} /opt/google-cloud-sdk/bin/bootstrapping/install.py"
 
 template "/etc/profile.d/google_cloud.sh" do
   source "google_cloud.sh.erb"
@@ -36,12 +39,6 @@ template "/etc/profile.d/google_cloud.sh" do
   group "root"
   mode "0777"
   variables( :version => node[:google_cloud][:gcutil][:version] )
-  action :create
-end
-
-link "/usr/local/bin/gcutil" do
-  to "/usr/local/share/gcutil-#{node[:google_cloud][:gcutil][:version]}/gcutil"
-  link_type :symbolic
   action :create
 end
 
@@ -53,6 +50,4 @@ template "/root/.gcutil_auth" do
   variables( :auth_value => node[:google_cloud][:gcutil][:auth_file_value] )
   action :create
 end
-
-execute "/usr/local/bin/gcutil getproject --project=#{node[:google_cloud][:project]} --cache_flag_values"
 
