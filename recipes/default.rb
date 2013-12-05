@@ -75,4 +75,4 @@ bash "set python version" do
   only_if { node[:google_cloud][:python][:bin] == "/usr/bin/python2.7" }
 end
 
-execute "gcloud config set project #{node[:google_cloud][:project]}"
+execute "/opt/google-cloud-sdk/bin/gcloud config set project #{node[:google_cloud][:project]}"
