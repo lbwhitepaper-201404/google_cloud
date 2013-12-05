@@ -43,7 +43,7 @@ end
 
 directory "/root/.config/gcloud" do
   owner "root"
-  mode "root"
+  group "root"
   mode 0755
   action :create
 end
