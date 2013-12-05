@@ -38,11 +38,17 @@ template "/etc/profile.d/google_cloud.sh" do
   owner "root"
   group "root"
   mode "0777"
-  variables( :version => node[:google_cloud][:gcutil][:version] )
   action :create
 end
 
-template "/root/.gcutil_auth" do
+directory "/root/.config/gcloud" do
+  owner "root"
+  mode "root"
+  mode 0755
+  action :create
+end
+
+template "/root/.config/gcloud/credentials" do
   source "gcutil_auth.erb"
   owner "root"
   group "root"
@@ -51,3 +57,22 @@ template "/root/.gcutil_auth" do
   action :create
 end
 
+template "/opt/google-cloud-sdk/bin/gcloud" do
+  source "gcloud.erb"
+  owner "root"
+  group "root"
+  variables( :python => node[:google_cloud][:python][:bin] )
+  mode "0777"
+  action :create
+end
+
+bash "set python version" do 
+  cwd "/opt/google-cloud-sdk/bin/"
+  code <<-EOF
+    sed -i -e 's/python/python2.7/1' gsutil
+    sed -i -e 's/python/python2.7/1' gcutil
+  EOF
+  only_if { node[:google_cloud][:python][:bin] == "/usr/bin/python2.7" }
+end
+
+execute "gcloud config set project #{node[:google_cloud][:project]}"
