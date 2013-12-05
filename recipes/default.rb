@@ -29,7 +29,7 @@ remote_file "/opt/google-cloud-sdk.tar.gz" do
   action :create
 end
 
-execute "tar -xvzf /opt/google-cloud-sdk.tar.gz"
+execute "tar -xzf /opt/google-cloud-sdk.tar.gz -C /opt"
 
 execute "CLOUDSDK_CORE_DISABLE_PROMPTS=1 #{node[:google_cloud][:python][:bin]} /opt/google-cloud-sdk/bin/bootstrapping/install.py"
 
