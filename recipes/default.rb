@@ -31,13 +31,14 @@ end
 
 execute "tar -xzf /opt/google-cloud-sdk.tar.gz -C /opt"
 
-execute "CLOUDSDK_CORE_DISABLE_PROMPTS=1 #{node[:google_cloud][:python][:bin]} /opt/google-cloud-sdk/bin/bootstrapping/install.py"
+execute "export CLOUDSDK_PYTHON=#{[:google_cloud][:python][:bin]}; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; #{node[:google_cloud][:python][:bin]} /opt/google-cloud-sdk/bin/bootstrapping/install.py"
 
 template "/etc/profile.d/google_cloud.sh" do
   source "google_cloud.sh.erb"
   owner "root"
   group "root"
   mode "0777"
+  variables( :python => node[:google_cloud][:python][:bin] )
   action :create
 end
 
@@ -57,22 +58,13 @@ template "/root/.config/gcloud/credentials" do
   action :create
 end
 
-template "/opt/google-cloud-sdk/bin/gcloud" do
-  source "gcloud.erb"
+template "/root/.config/gcloud/legacy_credentials" do
+  source "gcutil_auth.erb"
   owner "root"
   group "root"
-  variables( :python => node[:google_cloud][:python][:bin] )
-  mode "0777"
+  mode "0600"
+  variables( :auth_value => node[:google_cloud][:gcutil][:auth_file_value] )
   action :create
 end
 
-bash "set python version" do 
-  cwd "/opt/google-cloud-sdk/bin/"
-  code <<-EOF
-    sed -i -e 's/python/python2.7/1' gsutil
-    sed -i -e 's/python/python2.7/1' gcutil
-  EOF
-  only_if { node[:google_cloud][:python][:bin] == "/usr/bin/python2.7" }
-end
-
-execute "/opt/google-cloud-sdk/bin/gcloud config set project #{node[:google_cloud][:project]}"
+execute "source /etc/profile.d/google_cloud.sh; /opt/google-cloud-sdk/bin/gcloud config set project #{node[:google_cloud][:project]}"
