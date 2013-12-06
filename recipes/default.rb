@@ -31,7 +31,7 @@ end
 
 execute "tar -xzf /opt/google-cloud-sdk.tar.gz -C /opt"
 
-execute "export CLOUDSDK_PYTHON=#{[:google_cloud][:python][:bin]}; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; #{node[:google_cloud][:python][:bin]} /opt/google-cloud-sdk/bin/bootstrapping/install.py"
+execute "export CLOUDSDK_PYTHON=#{node[:google_cloud][:python][:bin]}; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; #{node[:google_cloud][:python][:bin]} /opt/google-cloud-sdk/bin/bootstrapping/install.py"
 
 template "/etc/profile.d/google_cloud.sh" do
   source "google_cloud.sh.erb"
