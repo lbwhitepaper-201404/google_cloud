@@ -17,23 +17,23 @@ action :install do
   tag=new_resource.tag
 
   Chef::Log.info "creating firewall rule"
-  execute "/usr/local/bin/gcutil addfirewall #{pool_name}-firewall --target_tags=#{tag} --allowed=tcp:#{port}"
+  execute "${CLOUDSDK_PYTHON:=python} /opt/google-cloud-sdk/bin/gcutil addfirewall #{pool_name}-firewall --target_tags=#{tag} --allowed=tcp:#{port}"
 
   Chef::Log.info "Creating health check"
-  execute "/usr/local/bin/gcutil addhttphealthcheck \"health-check-#{pool_name}\""
+  execute "${CLOUDSDK_PYTHON:=python} /opt/google-cloud-sdk/bin/gcutil addhttphealthcheck \"health-check-#{pool_name}\""
 
   Chef::Log.info "creating lb pool" 
-  execute "/usr/local/bin/gcutil addtargetpool \"#{pool_name}\" --region=\"#{node[:google_cloud][:region]}\" --health_checks=\"health-check-#{pool_name}\""
+  execute "${CLOUDSDK_PYTHON:=python} /opt/google-cloud-sdk/bin/gcutil addtargetpool \"#{pool_name}\" --region=\"#{node[:google_cloud][:region]}\" --health_checks=\"health-check-#{pool_name}\""
   
   if node[:google][:lb][:ip].nil?  
     Chef::Log.info "creating ip address"
-    parsed_ip=JSON.parse(`/usr/local/bin/gcutil reserveaddress "#{pool_name}" --region=us-central1 --print_json`)["items"][1]["address"]
+    parsed_ip=JSON.parse(`${CLOUDSDK_PYTHON:=python} /opt/google-cloud-sdk/bin/gcutil reserveaddress "#{pool_name}" --region=us-central1 --print_json`)["items"][1]["address"]
   else
     parsed_ip=node[:google][:lb][:ip]
   end
   
   Chef::Log.info "adding forwarding rule"
-  execute "/usr/local/bin/gcutil addforwardingrule \"forwarding-rule-#{pool_name}\" --region=\"#{node[:google_cloud][:region]}\" --ip=\"#{parsed_ip}\" --target=\"#{pool_name}\""
+  execute "${CLOUDSDK_PYTHON:=python} /opt/google-cloud-sdk/bin/gcutil addforwardingrule \"forwarding-rule-#{pool_name}\" --region=\"#{node[:google_cloud][:region]}\" --ip=\"#{parsed_ip}\" --target=\"#{pool_name}\""
   
 end
 
@@ -61,10 +61,10 @@ action :attach do
   end
   #opening google firewall port
   counter=0
-  cmd="/usr/local/bin/gcutil --project="#{node[:google_cloud][:project]}" getinstance #{node[:google_cloud][:instance_id]} --print_json"
+  cmd="${CLOUDSDK_PYTHON:=python} /opt/google-cloud-sdk/bin/gcutil --project="#{node[:google_cloud][:project]}" getinstance #{node[:google_cloud][:instance_id]} --print_json"
   Chef::Log.info cmd
   begin
-    instance=JSON.parse(`/usr/local/bin/gcutil --project="#{node[:google_cloud][:project]}" getinstance #{node[:google_cloud][:instance_id]} --print_json`)
+    instance=JSON.parse(`${CLOUDSDK_PYTHON:=python} /opt/google-cloud-sdk/bin/gcutil --project="#{node[:google_cloud][:project]}" getinstance #{node[:google_cloud][:instance_id]} --print_json`)
   rescue
     Chef::Log.info "Unable to parse json properly, retrying for #{120-counter} times"
     sleep 1
@@ -82,10 +82,10 @@ action :attach do
     tags=[lb_fw_tag]
   end
 
-  execute "/usr/local/bin/gcutil --project=\"#{node[:google_cloud][:project]}\" setinstancetags #{node[:google_cloud][:instance_id]} --tags \"#{tags.join(",")}\" --fingerprint #{fingerprint}"
+  execute "${CLOUDSDK_PYTHON:=python} /opt/google-cloud-sdk/bin/gcutil --project=\"#{node[:google_cloud][:project]}\" setinstancetags #{node[:google_cloud][:instance_id]} --tags \"#{tags.join(",")}\" --fingerprint #{fingerprint}"
 
   #add a instance to resource pool
-  execute "/usr/local/bin/gcutil --project=#{node[:google_cloud][:project]} addtargetpoolinstance #{service_lb_name} --instances=#{node[:google_cloud][:zone_id]}/#{node[:google_cloud][:instance_id]} --region=#{node[:google_cloud][:region]}"
+  execute "${CLOUDSDK_PYTHON:=python} /opt/google-cloud-sdk/bin/gcutil --project=#{node[:google_cloud][:project]} addtargetpoolinstance #{service_lb_name} --instances=#{node[:google_cloud][:zone_id]}/#{node[:google_cloud][:instance_id]} --region=#{node[:google_cloud][:region]}"
 
   #add ip to instance if it doesn't exist
 #  if !node["network"]["interfaces"]["eth0"]["addresses"].keys.include?(node[:google_cloud][:lb][:ip])
@@ -129,7 +129,7 @@ action :detach do
   end
 
   #add code here
-   execute "/usr/local/bin/gcutil --project=#{node[:google_cloud][:project]} removetargetpoolinstance #{service_lb_name} --instances=#{node[:google_cloud][:zone_id]}/#{node[:google_cloud][:instance_id]} --region=#{node[:google_cloud][:region]}"
+   execute "${CLOUDSDK_PYTHON:=python} /opt/google-cloud-sdk/bin/gcutil --project=#{node[:google_cloud][:project]} removetargetpoolinstance #{service_lb_name} --instances=#{node[:google_cloud][:zone_id]}/#{node[:google_cloud][:instance_id]} --region=#{node[:google_cloud][:region]}"
 
   # See cookbooks/sys_firewall/providers/default.rb for the "update" action.
   sys_firewall "Close backend_port allowing ELB to connect" do
@@ -140,11 +140,11 @@ action :detach do
   end
 
   #closing google firewall port
-  instance=JSON.parse(`/usr/local/bin/gcutil --project="#{node[:google_cloud][:project]}" getinstance #{node[:google_cloud][:instance_id]} --print_json`)
+  instance=JSON.parse(`${CLOUDSDK_PYTHON:=python} /opt/google-cloud-sdk/bin/gcutil --project="#{node[:google_cloud][:project]}" getinstance #{node[:google_cloud][:instance_id]} --print_json`)
   fingerprint=instance["tags"]["fingerprint"]
   tags=instance["tags"]["items"]
   tags.delete(lb_fw_tag)
-  execute "/usr/local/bin/gcutil --project=\"#{node[:google_cloud][:project]}\" setinstancetags #{node[:google_cloud][:instance_id]} --tags \"#{tags.join(",")}\" --fingerprint #{fingerprint}"
+  execute "${CLOUDSDK_PYTHON:=python} /opt/google-cloud-sdk/bin/gcutil --project=\"#{node[:google_cloud][:project]}\" setinstancetags #{node[:google_cloud][:instance_id]} --tags \"#{tags.join(",")}\" --fingerprint #{fingerprint}"
   #
 end
 
