@@ -9,7 +9,8 @@ version          '0.1.2'
 depends "python"
 depends "sys_firewall"
 
-recipe "google_cloud::default", "installs gcutil"
+recipe "google_cloud::default", "installs google_cloud_sdk"
+recipe "google_cloud::gcloud_components_update", "updates the components"
 recipe "google_cloud::lb_setup", "sets up google cloud lb"
 recipe "google_cloud::lb_do_attach", "attaches to lb"
 recipe "google_cloud::lb_do_detach", "detaches from lb"
