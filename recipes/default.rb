@@ -59,7 +59,7 @@ end
 
 execute "tar -xzf /root/.config/gcloud.tar.gz -C /root/.config/"
 
-cookbook_file "/opt/google_cloud_sdk/bin/cloudsdk_python" do
+cookbook_file "/opt/google-cloud-sdk/bin/cloudsdk_python" do
   source "cloudsdk_python"
   owner "root"
   group "root"
@@ -68,7 +68,7 @@ cookbook_file "/opt/google_cloud_sdk/bin/cloudsdk_python" do
 end
 
 bash "update python" do
-  cwd "/opt/google_cloud_sdk/bin"
+  cwd "/opt/google-cloud-sdk/bin"
   code <<-EOF
     sed -i -e 's/python/cloudsdk_python/1' gcutil
     sed -i -e 's/python/cloudsdk_python/1' gsutil
