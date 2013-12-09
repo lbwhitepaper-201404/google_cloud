@@ -16,9 +16,15 @@ recipe "google_cloud::lb_do_attach", "attaches to lb"
 recipe "google_cloud::lb_do_detach", "detaches from lb"
 
 #general settings
-attribute "google_cloud/gcutil/auth_file_value", 
-  :display_name => "Google gcutil auth file", 
-  :description => "Google gcutil auth file",
+attribute "google_cloud/auth/cred_file", 
+  :display_name => "Google cred file", 
+  :description => "Google cred auth file",
+  :required => "required",
+  :recipes => [ "google_cloud::default" ]
+
+attribute "google_cloud/auth/account",
+  :display_name => "Google Auth Account",
+  :description => "Google Auth Account Name",
   :required => "required",
   :recipes => [ "google_cloud::default" ]
 

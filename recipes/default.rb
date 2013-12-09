@@ -49,22 +49,31 @@ directory "/root/.config/gcloud" do
   action :create
 end
 
-template "/root/.config/gcloud/credentials" do
-  source "gcutil_auth.erb"
+remote_file "/root/.config/gcloud.tar.gz" do
+  source "#{node[:google_cloud][:auth][:cred_file]}"
   owner "root"
   group "root"
   mode "0600"
-  variables( :auth_value => node[:google_cloud][:gcutil][:auth_file_value] )
   action :create
 end
 
-template "/root/.config/gcloud/legacy_credentials" do
-  source "gcutil_auth.erb"
+execute "tar -xzf /root/.config/gcloud.tar.gz -C /root/.config/"
+
+cookbook_file "/opt/google_cloud_sdk/bin/cloudsdk_python" do
+  source "cloudsdk_python"
   owner "root"
   group "root"
-  mode "0600"
-  variables( :auth_value => node[:google_cloud][:gcutil][:auth_file_value] )
+  mode "0777"
   action :create
 end
 
+bash "update python" do
+  cwd "/opt/google_cloud_sdk/bin"
+  code <<-EOF
+    sed -i -e 's/python/cloudsdk_python/1' gcutil
+    sed -i -e 's/python/cloudsdk_python/1' gsutil
+  EOF
+end
+
+execute "source /etc/profile.d/google_cloud.sh; /opt/google-cloud-sdk/bin/gcloud config set account #{node[:google_cloud][:auth][:account]}"
 execute "source /etc/profile.d/google_cloud.sh; /opt/google-cloud-sdk/bin/gcloud config set project #{node[:google_cloud][:project]}"

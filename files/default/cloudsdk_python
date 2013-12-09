@@ -1,0 +1,4 @@
+if [ -z $CLOUDSDK_PYTHON ]; then
+CLOUDSDK_PYTHON="python"
+fi
+$CLOUDSDK_PYTHON "$@"
