@@ -37,7 +37,7 @@ action :install do
   
 end
 
-# Attaches an application server to Elastic Load Balancer
+# Attaches an application server to Google Load Balancer
 action :attach do
   
   service_lb_name=new_resource.service_lb_name
