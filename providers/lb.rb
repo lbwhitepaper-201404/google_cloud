@@ -85,7 +85,7 @@ action :attach do
   execute "source /etc/profile.d/google_cloud.sh; /opt/google-cloud-sdk/bin/gcutil --project=\"#{node[:google_cloud][:project]}\" setinstancetags #{node[:google_cloud][:instance_id]} --tags \"#{tags.join(",")}\" --fingerprint #{fingerprint}"
 
   #add a instance to resource pool
-  execute "source /etc/profile.d/google_cloud.sh; /opt/google-cloud-sdk/bin/gcutil --project=#{node[:google_cloud][:project]} addtargetpoolinstance #{service_lb_name} --instances=#{node[:google_cloud][:zone_id]}/#{node[:google_cloud][:instance_id]} --region=#{node[:google_cloud][:region]}"
+  execute "source /etc/profile.d/google_cloud.sh; /opt/google-cloud-sdk/bin/gcutil --project=#{node[:google_cloud][:project]} addtargetpoolinstance #{service_lb_name} --instances=#{node[:google_cloud][:zone_id]}/instances/#{node[:google_cloud][:instance_id]} --region=#{node[:google_cloud][:region]}"
 
   #add ip to instance if it doesn't exist
 #  if !node["network"]["interfaces"]["eth0"]["addresses"].keys.include?(node[:google_cloud][:lb][:ip])
