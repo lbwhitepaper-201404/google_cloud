@@ -52,15 +52,13 @@ directory "/root/.config/gcloud" do
   action :create
 end
 
-remote_file "/root/.config/gcloud.tar.gz" do
-  source "#{node[:google_cloud][:auth][:cred_file]}"
-  owner "root"
-  group "root"
-  mode "0600"
-  action :create
+#base64 encoded authentication file - uses a dash credential
+bash "creating autheticated google dir" do
+  code <<-EOH
+  base64 -d  #{node[:google_cloud][:gcutil][:credential_file]} >> creds.tgz
+  tar -zxv creds.tgz -C /root/.config
+  EOH
 end
-
-execute "tar -xzf /root/.config/gcloud.tar.gz -C /root/.config/"
 
 cookbook_file "/opt/google-cloud-sdk/bin/cloudsdk_python" do
   source "cloudsdk_python"

@@ -16,7 +16,7 @@ recipe "google_cloud::lb_do_attach", "attaches to lb"
 recipe "google_cloud::lb_do_detach", "detaches from lb"
 
 #general settings
-attribute "google_cloud/auth/cred_file", 
+attribute "google_cloud/auth/credential_file", 
   :display_name => "Google cred file", 
   :description => "Google cred auth file",
   :required => "required",
