@@ -53,12 +53,12 @@ directory "/root/.config/gcloud" do
 end
 
 #base64 encoded authentication file - uses a dash credential
-#bash "creating autheticated google dir" do
-#  code <<-EOH
-#  echo #{node[:google_cloud][:gcutil][:credential_file]}  > /tmp/creds.base
+bash "creating autheticated google dir" do
+  code <<-EOH
+  echo #{node[:google_cloud][:gcutil][:credential_file]}  > /tmp/creds.base
   #base64 -d /tmp/creds.base > /tmp/creds.tgz
   #tar -zxv creds.tgz -C /root/.config
-#  EOH
+  EOH
 #end
 
 cookbook_file "/opt/google-cloud-sdk/bin/cloudsdk_python" do
