@@ -59,6 +59,7 @@ bash "creating autheticated google dir" do
   #base64 -d /tmp/creds.base > /tmp/creds.tgz
   #tar -zxv creds.tgz -C /root/.config
   EOH
+  flags "-ex"
 end
 
 cookbook_file "/opt/google-cloud-sdk/bin/cloudsdk_python" do
