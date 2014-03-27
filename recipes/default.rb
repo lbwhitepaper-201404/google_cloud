@@ -54,9 +54,8 @@ end
 
 #base64 encoded authentication file - uses a dash credential
 bash "creating autheticated google dir" do
-  data = node[:google_cloud][:auth][:credential_file]
-  puts data
   code <<-EOH
+  echo #node[:google_cloud][:auth][:credential_file]
   #base64 -d /tmp/creds.base > /tmp/creds.tgz
   #tar -zxv creds.tgz -C /root/.config
   EOH
