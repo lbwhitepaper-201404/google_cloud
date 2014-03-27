@@ -56,6 +56,7 @@ end
 bash "creating autheticated google dir" do
   code <<-EOH
   echo #node[:google_cloud][:auth][:credential_file]
+  echo #node[:google_cloud][:auth][:account]
   #base64 -d /tmp/creds.base > /tmp/creds.tgz
   #tar -zxv creds.tgz -C /root/.config
   EOH
