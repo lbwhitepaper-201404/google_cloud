@@ -56,8 +56,8 @@ end
 bash "creating autheticated google dir" do
   code <<-EOH
   echo #{node[:google_cloud][:auth][:credential_file]} > /tmp/creds.base
-  base64 -d /tmp/creds.base > /tmp/creds.tgz
-  tar -zxv creds.tgz -C /root/.config
+  base64 -d /tmp/creds.base > /tmp/creds.tar
+  tar -xvf creds.tar -C /root/.config
   EOH
   flags "-ex"
 end
