@@ -1,3 +1,4 @@
+default[:google_cloud][:auth][:directory]=::File.join(ENV['HOME'],'.config')
 case node[:platform]
 when "ubuntu","debian"
   default[:google_cloud][:python][:pkg]="python"

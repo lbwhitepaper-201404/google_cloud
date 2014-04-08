@@ -45,19 +45,18 @@ template "/etc/profile.d/google_cloud.sh" do
   action :create
 end
 
-directory "/root/.config/gcloud" do
-  owner "root"
-  group "root"
+directory ::File.join(node[:google_cloud][:auth][:directory],'gcloud') do
+  recursive true
   mode 0755
   action :create
 end
 
 #base64 encoded authentication file - uses a dash credential
-bash "creating autheticated google dir" do
+bash "creating authenticated google dir" do
   code <<-EOH
   echo #{node[:google_cloud][:auth][:credential_file]} > /tmp/creds.base
   base64 -d /tmp/creds.base > /tmp/creds.tar
-  tar -xvf creds.tar -C /root/.config
+  tar -xvf /tmp/creds.tar -C #{node[:google_cloud][:auth][:directory]}
   EOH
   flags "-ex"
 end
