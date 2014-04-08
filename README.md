@@ -32,7 +32,8 @@ e.g.
     <td>
     A base64 encoded string of a tar file made of your ~/.config/gcloud directory.
 
-    tar -zcpf creds.tar.gz ~/.config/gcloud
+    cd ~/.config
+    tar -zcpf creds.tar.gz gcloud
     base64 creds.tar.gz >> creds.base64
     </td>
     <td><tt>nil</tt></td>
