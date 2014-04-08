@@ -27,10 +27,15 @@ e.g.
     <th>Default</th>
   </tr>
   <tr>
-    <td><tt>['google_cloud']['bacon']</tt></td>
-    <td>Boolean</td>
-    <td>whether to include bacon</td>
-    <td><tt>true</tt></td>
+    <td><tt>['google_cloud']['auth']['credential_file']</tt></td>
+    <td>String</td>
+    <td>
+    A base64 encoded string of a tar file made of your ~/.config/gcloud directory.
+
+    tar -zcpf creds.tar.gz ~/.config/gcloud
+    base64 creds.tar.gz >> creds.base64
+    </td>
+    <td><tt>nil</tt></td>
   </tr>
 </table>
 
