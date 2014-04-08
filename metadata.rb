@@ -7,7 +7,6 @@ long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version          '0.1.9'
 
 depends "python"
-depends "sys_firewall"
 
 recipe "google_cloud::default", "installs google_cloud_sdk"
 recipe "google_cloud::gcloud_components_update", "updates the components"

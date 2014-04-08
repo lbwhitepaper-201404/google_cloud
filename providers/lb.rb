@@ -51,14 +51,6 @@ action :attach do
   Chef::Log.info "  Attaching #{node[:google_cloud][:instance_id]} to" +
     " #{service_lb_name}"
 
-  # Opens the backend_port.
-  # See cookbooks/sys_firewall/providers/default.rb for the "update" action.
-  sys_firewall "Open backend_port to allow ELB to connect" do
-    port new_resource.backend_port
-    enable true
-    ip_addr "any"
-    action :update
-  end
   #opening google firewall port
   counter=0
   cmd="source /etc/profile.d/google_cloud.sh; /opt/google-cloud-sdk/bin/gcutil --project=\"#{node[:google_cloud][:project]}\" getinstance #{node[:google_cloud][:instance_id]} --print_json"
@@ -130,14 +122,6 @@ action :detach do
 
   #add code here
    execute "source /etc/profile.d/google_cloud.sh; /opt/google-cloud-sdk/bin/gcutil --project=#{node[:google_cloud][:project]} removetargetpoolinstance #{service_lb_name} --instances=#{node[:google_cloud][:zone_id]}/#{node[:google_cloud][:instance_id]} --region=#{node[:google_cloud][:region]}"
-
-  # See cookbooks/sys_firewall/providers/default.rb for the "update" action.
-  sys_firewall "Close backend_port allowing ELB to connect" do
-    port new_resource.backend_port
-    enable false
-    ip_addr "any"
-    action :update
-  end
 
   #closing google firewall port
   instance=JSON.parse(`source /etc/profile.d/google_cloud.sh; /opt/google-cloud-sdk/bin/gcutil --project="#{node[:google_cloud][:project]}" getinstance #{node[:google_cloud][:instance_id]} --print_json`)
