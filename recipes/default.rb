@@ -77,5 +77,5 @@ bash "update python" do
   EOF
 end
 
-execute "source /etc/profile.d/google_cloud.sh; /opt/google-cloud-sdk/bin/gcloud config set account #{node[:google_cloud][:auth][:account]}"
-execute "source /etc/profile.d/google_cloud.sh; /opt/google-cloud-sdk/bin/gcloud config set project #{node[:google_cloud][:project]}"
+execute ". /etc/profile.d/google_cloud.sh; /opt/google-cloud-sdk/bin/gcloud config set account #{node[:google_cloud][:auth][:account]}"
+execute ". /etc/profile.d/google_cloud.sh; /opt/google-cloud-sdk/bin/gcloud config set project #{node[:google_cloud][:project]}"
